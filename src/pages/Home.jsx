@@ -1,38 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, Users } from "lucide-react";
+import { Trophy } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ConferencePicker from "@/components/ConferencePicker";
 import PlayoffBracket from "@/components/PlayoffBracket";
-import { getTeamById } from "@/data/nflTeams";
-
-const EMPTY_SEEDS = () => Array(7).fill(null);
-const EMPTY_PICKS = () => ({ afc: {}, nfc: {}, sb: null });
-
-// Downstream clearing when a pick changes
-const DOWNSTREAM = {
-  wc1: ["div1", "div2", "cc"],
-  wc2: ["div1", "div2", "cc"],
-  wc3: ["div1", "div2", "cc"],
-  div1: ["cc"],
-  div2: ["cc"],
-  cc: [],
-};
+import Leaderboard from "@/components/Leaderboard";
+import TopNav from "@/components/TopNav";
+import { useBracket } from "@/hooks/useBracket";
 
 export default function Home() {
-  const [afcSeeds, setAfcSeeds] = useState(EMPTY_SEEDS());
-  const [nfcSeeds, setNfcSeeds] = useState(EMPTY_SEEDS());
-  const [picks, setPicks] = useState(EMPTY_PICKS());
+  const { afcSeeds, nfcSeeds, picks, bothReady, champion, handlePick, handleSeedsChange, reset } = useBracket();
   const [nickname, setNickname] = useState("");
   const [saving, setSaving] = useState(false);
   const [savedList, setSavedList] = useState([]);
   const [loadingSaved, setLoadingSaved] = useState(true);
 
-  const bothReady = afcSeeds.every(Boolean) && nfcSeeds.every(Boolean);
-
   const loadSaved = async () => {
     try {
-      const res = await base44.entities.Prediction.list("-created_date", 10);
+      const res = await base44.entities.Prediction.list("-created_date", 50);
       setSavedList(res || []);
     } catch {
       setSavedList([]);
@@ -44,37 +29,6 @@ export default function Home() {
   useEffect(() => {
     loadSaved();
   }, []);
-
-  const handlePick = (conf, gameKey, teamId) => {
-    setPicks((prev) => {
-      const next = { ...prev, [conf]: { ...prev[conf] } };
-      if (conf === "sb") {
-        next.sb = teamId;
-        return next;
-      }
-      // toggle off if same
-      if (next[conf][gameKey] === teamId) {
-        delete next[conf][gameKey];
-      } else {
-        next[conf][gameKey] = teamId;
-      }
-      // clear downstream
-      const toClear = DOWNSTREAM[gameKey] || [];
-      toClear.forEach((k) => delete next[conf][k]);
-      next.sb = null;
-      return next;
-    });
-  };
-
-  // Clear bracket picks if seeds change and break validity
-  const handleSeedsChange = (conf, newSeeds) => {
-    if (conf === "AFC") setAfcSeeds(newSeeds);
-    else setNfcSeeds(newSeeds);
-    // Reset all picks since seed changes invalidate the bracket
-    setPicks(EMPTY_PICKS());
-  };
-
-  const champion = picks.sb ? getTeamById(picks.sb) : null;
 
   const handleSave = async () => {
     if (!bothReady || !champion) return;
@@ -98,12 +52,6 @@ export default function Home() {
     }
   };
 
-  const handleReset = () => {
-    setAfcSeeds(EMPTY_SEEDS());
-    setNfcSeeds(EMPTY_SEEDS());
-    setPicks(EMPTY_PICKS());
-  };
-
   return (
     <div className="min-h-screen bg-zinc-950 text-white relative overflow-hidden">
       {/* Background gradient mesh */}
@@ -114,6 +62,7 @@ export default function Home() {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-12">
+        <TopNav />
         {/* Hero */}
         <header className="text-center mb-10 md:mb-14">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 mb-4">
@@ -198,49 +147,23 @@ export default function Home() {
           )}
         </AnimatePresence>
 
-        {/* Saved predictions */}
+        {/* Leaderboard */}
         <section>
           <div className="flex items-center gap-3 mb-5">
-            <Users className="w-5 h-5 text-white/40" />
-            <h2 className="text-lg font-bold">Recent Predictions</h2>
+            <Trophy className="w-5 h-5 text-amber-400/70" />
+            <h2 className="text-lg font-bold">Leaderboard</h2>
+            <span className="text-xs text-white/40">Ranked by correct picks</span>
           </div>
           {loadingSaved ? (
-            <div className="text-center py-8 text-white/30 text-sm">Loading...</div>
-          ) : savedList.length === 0 ? (
-            <div className="text-center py-8 text-white/30 text-sm border border-dashed border-white/10 rounded-xl">
-              No predictions yet — be the first to lock one in!
-            </div>
+            <div className="text-center py-8 text-white/30 text-sm">Loading…</div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {savedList.map((p) => {
-                const champ = getTeamById(p.champion);
-                return (
-                  <div key={p.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-bold text-white/90">{p.nickname}</span>
-                      <Trophy className="w-3.5 h-3.5 text-amber-400/60" />
-                    </div>
-                    {champ && (
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-6 h-6 rounded-md flex items-center justify-center text-[8px] font-bold font-mono"
-                          style={{ background: `linear-gradient(135deg, ${champ.primary}, ${champ.secondary})`, color: "#fff", textShadow: "0 1px 2px rgba(0,0,0,0.6)" }}
-                        >
-                          {champ.abbr}
-                        </div>
-                        <span className="text-xs text-white/60">{champ.city} {champ.name}</span>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            <Leaderboard predictions={savedList} />
           )}
         </section>
 
         {(afcSeeds.some(Boolean) || nfcSeeds.some(Boolean)) && (
           <div className="text-center mt-10">
-            <button onClick={handleReset} className="text-xs text-white/40 hover:text-white/70 underline underline-offset-4">
+            <button onClick={reset} className="text-xs text-white/40 hover:text-white/70 underline underline-offset-4">
               Reset everything
             </button>
           </div>
