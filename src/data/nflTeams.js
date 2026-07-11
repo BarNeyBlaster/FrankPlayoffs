@@ -69,6 +69,7 @@ export function buildConfBracket(seeds, picks) {
   // #1 seed plays the worst remaining (highest seed number); other two play each other
   const sorted = [...wcWinnerList].sort((a, b) => a.seedNum - b.seedNum);
   const div1 = {
+    key: "div1",
     teamA: seed(1),
     teamB: sorted[2] ? sorted[2].team : null,
     winnerId: picks.div1 || null,
@@ -76,6 +77,7 @@ export function buildConfBracket(seeds, picks) {
     seedB: sorted[2] ? sorted[2].seedNum : null,
   };
   const div2 = {
+    key: "div2",
     teamA: sorted[0] ? sorted[0].team : null,
     teamB: sorted[1] ? sorted[1].team : null,
     winnerId: picks.div2 || null,
@@ -84,6 +86,7 @@ export function buildConfBracket(seeds, picks) {
   };
 
   const cc = {
+    key: "cc",
     teamA: div1.winnerId ? getTeamById(div1.winnerId) : null,
     teamB: div2.winnerId ? getTeamById(div2.winnerId) : null,
     winnerId: picks.cc || null,
