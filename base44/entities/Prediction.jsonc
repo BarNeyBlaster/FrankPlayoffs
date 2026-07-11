@@ -1,0 +1,43 @@
+{
+  "name": "Prediction",
+  "type": "object",
+  "properties": {
+    "nickname": {
+      "type": "string",
+      "description": "Display name of the predictor"
+    },
+    "afc_seeds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "7 team ids, index 0 = #1 seed"
+    },
+    "nfc_seeds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "7 team ids, index 0 = #1 seed"
+    },
+    "picks": {
+      "type": "object",
+      "description": "Game key to winner team id mapping",
+      "additionalProperties": true
+    },
+    "champion": {
+      "type": "string",
+      "description": "Team id of predicted Super Bowl champion"
+    },
+    "champion_name": {
+      "type": "string",
+      "description": "Display name of predicted champion"
+    }
+  },
+  "required": [
+    "nickname",
+    "afc_seeds",
+    "nfc_seeds",
+    "champion"
+  ]
+}
