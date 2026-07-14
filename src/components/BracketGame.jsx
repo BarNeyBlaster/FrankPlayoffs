@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 // A single matchup row in the bracket.
 // teamA/teamB: team objects or null. winnerId: selected winner team id or null.
 // onPick(teamId): called when user clicks a team. disabled: both teams not yet known.
-export default function BracketGame({ teamA, teamB, winnerId, onPick, seedA, seedB, conferenceColor }) {
+export default function BracketGame({ teamA, teamB, winnerId, onPick, seedA, seedB, conferenceColor, allowTbd }) {
   const ready = teamA && teamB;
   const cc = conferenceColor || "#888";
+  const tbdPicked = winnerId === "TBD";
 
   const renderRow = (team, seed, isWinner, isPicked) => {
     if (!team) {
@@ -51,6 +52,29 @@ export default function BracketGame({ teamA, teamB, winnerId, onPick, seedA, see
       {renderRow(teamA, seedA, winnerId === teamA?.id, winnerId === teamA?.id)}
       <div className="h-px bg-white/5" />
       {renderRow(teamB, seedB, winnerId === teamB?.id, winnerId === teamB?.id)}
+      {allowTbd && (
+        <>
+          <div className="h-px bg-white/5" />
+          <button
+            onClick={() => onPick("TBD")}
+            className={`w-full flex items-center gap-2 px-3 py-2 transition-all ${
+              tbdPicked ? "" : "hover:bg-white/10 opacity-60 hover:opacity-100"
+            }`}
+            style={tbdPicked ? { background: "linear-gradient(90deg, #52525b55, transparent)" } : {}}
+          >
+            <div className="w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold shrink-0 bg-white/10 text-white/50">?</div>
+            <span className={`text-xs font-medium ${tbdPicked ? "text-white" : "text-white/50"}`}>TBD</span>
+            {tbdPicked && (
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="ml-auto w-1.5 h-1.5 rounded-full"
+                style={{ background: cc }}
+              />
+            )}
+          </button>
+        </>
+      )}
     </div>
   );
 }

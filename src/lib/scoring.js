@@ -10,18 +10,20 @@ const ROUNDS = [
   { key: "sb", label: "Super Bowl", perPoint: 8, slots: [] },
 ];
 
+// "TBD" marks an undecided game in the official bracket — treat it as absent
+// so undecided games never count toward a user's score or the running max.
 function getRoundWinners(picks, roundKey) {
   const vals = [];
   if (!picks) return vals;
   if (roundKey === "sb") {
-    if (picks.sb) vals.push(picks.sb);
+    if (picks.sb && picks.sb !== "TBD") vals.push(picks.sb);
     return vals;
   }
   const round = ROUNDS.find((r) => r.key === roundKey);
   ["afc", "nfc"].forEach((conf) => {
     const c = picks[conf] || {};
     round.slots.forEach((slot) => {
-      if (c[slot]) vals.push(c[slot]);
+      if (c[slot] && c[slot] !== "TBD") vals.push(c[slot]);
     });
   });
   return vals;
@@ -29,9 +31,9 @@ function getRoundWinners(picks, roundKey) {
 
 function hasAnyOfficialPicks(picks) {
   if (!picks) return false;
-  if (picks.sb) return true;
+  if (picks.sb && picks.sb !== "TBD") return true;
   return ["afc", "nfc"].some((conf) =>
-    Object.values(picks[conf] || {}).some(Boolean)
+    Object.values(picks[conf] || {}).some((v) => v && v !== "TBD")
   );
 }
 
