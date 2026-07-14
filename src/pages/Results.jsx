@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Lock } from "lucide-react";
+import { Lock, Users } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import TopNav from "@/components/TopNav";
 import ResultsEditor from "@/components/ResultsEditor";
+import PredictionsManager from "@/components/PredictionsManager";
 
 export default function Results() {
   const [existing, setExisting] = useState(null);
@@ -56,6 +57,15 @@ export default function Results() {
         </header>
 
         <ResultsEditor initial={existing} onSaved={(rec) => setExisting(rec)} />
+
+        <section className="mt-12">
+          <div className="flex items-center gap-3 mb-5">
+            <Users className="w-5 h-5 text-amber-400/70" />
+            <h2 className="text-lg font-bold">Manage Predictions</h2>
+            <span className="text-xs text-white/40">Delete any submitted bracket</span>
+          </div>
+          <PredictionsManager />
+        </section>
 
         <footer className="text-center mt-16 pb-4">
           <p className="text-[11px] text-white/20">Unofficial fan project · All team names and colors belong to their respective owners</p>

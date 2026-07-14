@@ -37,7 +37,6 @@
   },
   "required": [
     "afc_seeds",
-    "nfc_seeds",
-    "champion"
+    "nfc_seeds"
   ]
 }

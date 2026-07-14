@@ -10,16 +10,18 @@ export default function ResultsEditor({ initial, onSaved }) {
   const [savedMsg, setSavedMsg] = useState(false);
 
   const handleSave = async () => {
-    if (!bracket.bothReady || !bracket.champion) return;
+    if (!bracket.bothReady) return;
     setSaving(true);
     const payload = {
       afc_seeds: bracket.afcSeeds,
       nfc_seeds: bracket.nfcSeeds,
       picks: bracket.picks,
-      champion: bracket.champion.id,
-      champion_name: `${bracket.champion.city} ${bracket.champion.name}`,
       season: "2026",
     };
+    if (bracket.champion) {
+      payload.champion = bracket.champion.id;
+      payload.champion_name = `${bracket.champion.city} ${bracket.champion.name}`;
+    }
     try {
       let record;
       if (initial && initial.id) {
@@ -52,15 +54,22 @@ export default function ResultsEditor({ initial, onSaved }) {
         </section>
       )}
 
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-        <button
-          onClick={handleSave}
-          disabled={!bracket.champion || saving}
-          className="px-6 py-3 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold text-sm hover:from-amber-300 hover:to-amber-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-        >
-          {saving ? "Saving…" : initial && initial.id ? "Update Official Results" : "Lock In Results"}
-        </button>
-        {savedMsg && <span className="text-sm text-emerald-400 font-medium">✓ Saved — leaderboard updated</span>}
+      <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            onClick={handleSave}
+            disabled={!bracket.bothReady || saving}
+            className="px-6 py-3 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold text-sm hover:from-amber-300 hover:to-amber-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            {saving ? "Saving…" : bracket.champion ? (initial && initial.id ? "Update Official Results" : "Lock In Results") : "Save Progress"}
+          </button>
+          {savedMsg && <span className="text-sm text-emerald-400 font-medium">✓ Saved — leaderboard updated</span>}
+        </div>
+        {!bracket.champion && bracket.bothReady && (
+          <p className="text-xs text-white/40 text-center max-w-md">
+            You can save partial results as games are decided — the leaderboard will score whatever has been locked in so far.
+          </p>
+        )}
       </div>
     </>
   );
