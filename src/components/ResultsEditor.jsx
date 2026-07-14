@@ -8,6 +8,7 @@ export default function ResultsEditor({ initial, onSaved }) {
   const bracket = useBracket(initial);
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState(false);
+  const [errMsg, setErrMsg] = useState("");
 
   const handleSave = async () => {
     if (!bracket.bothReady) return;
@@ -23,6 +24,7 @@ export default function ResultsEditor({ initial, onSaved }) {
       payload.champion_name = `${bracket.champion.city} ${bracket.champion.name}`;
     }
     try {
+      setErrMsg("");
       let record;
       if (initial && initial.id) {
         record = await base44.entities.OfficialResult.update(initial.id, payload);
@@ -34,6 +36,10 @@ export default function ResultsEditor({ initial, onSaved }) {
       setTimeout(() => setSavedMsg(false), 2500);
     } catch (e) {
       console.error(e);
+      setErrMsg(
+        (e && (e.message || e.error)) ||
+          "Could not save. Check your connection and try again."
+      );
     } finally {
       setSaving(false);
     }
@@ -64,6 +70,7 @@ export default function ResultsEditor({ initial, onSaved }) {
             {saving ? "Saving…" : bracket.champion ? (initial && initial.id ? "Update Official Results" : "Lock In Results") : "Save Progress"}
           </button>
           {savedMsg && <span className="text-sm text-emerald-400 font-medium">✓ Saved — leaderboard updated</span>}
+          {errMsg && <span className="text-sm text-red-400 font-medium text-center max-w-md">{errMsg}</span>}
         </div>
         {!bracket.champion && bracket.bothReady && (
           <p className="text-xs text-white/40 text-center max-w-md">
