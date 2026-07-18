@@ -44,11 +44,7 @@ export const NFL_TEAMS = [
 
 export const DIVISIONS = ["East", "North", "South", "West"];
 
-// Admin-only placeholder for undecided games. Not in NFL_TEAMS, so it never
-// appears in the team-selection pickers — only as a pickable bracket option.
-export const TBD_TEAM = { id: "TBD", name: "TBD", city: "", abbr: "TBD", conference: null, division: null, primary: "#52525b", secondary: "#3f3f46" };
-
-export const getTeamById = (id) => (id === "TBD" ? TBD_TEAM : NFL_TEAMS.find((t) => t.id === id));
+export const getTeamById = (id) => NFL_TEAMS.find((t) => t.id === id);
 export const getTeamsByConference = (conf) => NFL_TEAMS.filter((t) => t.conference === conf);
 
 // Build the conference playoff bracket from seeds + picks.
@@ -65,11 +61,10 @@ export function buildConfBracket(seeds, picks) {
 
   const wcWinnerList = wcGames
     .filter((g) => g.winnerId)
-    .map((g) => {
-      if (g.winnerId === "TBD") return { team: TBD_TEAM, seedNum: null };
-      const isA = g.teamA.id === g.winnerId;
-      return { team: isA ? g.teamA : g.teamB, seedNum: isA ? g.seedA : g.seedB };
-    });
+    .map((g) => ({
+      team: g.teamA.id === g.winnerId ? g.teamA : g.teamB,
+      seedNum: g.teamA.id === g.winnerId ? g.seedA : g.seedB,
+    }));
 
   // #1 seed plays the worst remaining (highest seed number); other two play each other
   const sorted = [...wcWinnerList].sort((a, b) => a.seedNum - b.seedNum);

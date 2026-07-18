@@ -56,7 +56,7 @@ export default function ResultsEditor({ initial, onSaved }) {
 
       {bracket.bothReady && (
         <section className="mb-8">
-          <PlayoffBracket afcSeeds={bracket.afcSeeds} nfcSeeds={bracket.nfcSeeds} picks={bracket.picks} onPick={bracket.handlePick} allowTbd />
+          <PlayoffBracket afcSeeds={bracket.afcSeeds} nfcSeeds={bracket.nfcSeeds} picks={bracket.picks} onPick={bracket.handlePick} />
         </section>
       )}
 

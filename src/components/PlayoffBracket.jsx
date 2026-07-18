@@ -7,7 +7,7 @@ import BracketGame from "./BracketGame";
 const AFC_COLOR = "#E31837";
 const NFC_COLOR = "#0B5FBF";
 
-function ConfColumn({ title, seeds, confPicks, confColor, onPick, reverse, allowTbd }) {
+function ConfColumn({ title, seeds, confPicks, confColor, onPick, reverse }) {
   const { wcGames, div1, div2, cc } = buildConfBracket(seeds, confPicks);
   const rounds = [
     { label: "Wild Card", games: wcGames },
@@ -33,7 +33,6 @@ function ConfColumn({ title, seeds, confPicks, confColor, onPick, reverse, allow
                 seedA={g.seedA}
                 seedB={g.seedB}
                 conferenceColor={confColor}
-                allowTbd={allowTbd}
                 onPick={(teamId) => onPick(g.key, teamId)}
               />
             ))}
@@ -44,7 +43,7 @@ function ConfColumn({ title, seeds, confPicks, confColor, onPick, reverse, allow
   );
 }
 
-export default function PlayoffBracket({ afcSeeds, nfcSeeds, picks, onPick, allowTbd }) {
+export default function PlayoffBracket({ afcSeeds, nfcSeeds, picks, onPick }) {
   const afcChamp = picks.afc.cc ? getTeamById(picks.afc.cc) : null;
   const nfcChamp = picks.nfc.cc ? getTeamById(picks.nfc.cc) : null;
   const sbReady = afcChamp && nfcChamp;
@@ -61,7 +60,7 @@ export default function PlayoffBracket({ afcSeeds, nfcSeeds, picks, onPick, allo
         <div className="flex items-stretch gap-4 md:gap-8 min-w-max mx-auto">
           {/* AFC */}
           <div className="w-52 md:w-56">
-            <ConfColumn title="AFC" seeds={afcSeeds} confPicks={picks.afc} confColor={AFC_COLOR} allowTbd={allowTbd} onPick={(k, tid) => onPick("afc", k, tid)} />
+            <ConfColumn title="AFC" seeds={afcSeeds} confPicks={picks.afc} confColor={AFC_COLOR} onPick={(k, tid) => onPick("afc", k, tid)} />
           </div>
 
           {/* Super Bowl */}
@@ -74,7 +73,6 @@ export default function PlayoffBracket({ afcSeeds, nfcSeeds, picks, onPick, allo
                 winnerId={picks.sb}
                 onPick={(teamId) => onPick("sb", null, teamId)}
                 conferenceColor="#FFD700"
-                allowTbd={allowTbd}
               />
             </div>
 
@@ -108,7 +106,7 @@ export default function PlayoffBracket({ afcSeeds, nfcSeeds, picks, onPick, allo
 
           {/* NFC */}
           <div className="w-52 md:w-56">
-            <ConfColumn title="NFC" seeds={nfcSeeds} confPicks={picks.nfc} confColor={NFC_COLOR} allowTbd={allowTbd} onPick={(k, tid) => onPick("nfc", k, tid)} />
+            <ConfColumn title="NFC" seeds={nfcSeeds} confPicks={picks.nfc} confColor={NFC_COLOR} onPick={(k, tid) => onPick("nfc", k, tid)} />
           </div>
         </div>
       </div>
