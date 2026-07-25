@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Crown, AlertCircle, BarChart3 } from "lucide-react";
+import { Crown, AlertCircle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { scorePrediction } from "@/lib/scoring";
-import { getTeamById } from "@/data/nflTeams";
 
 export default function Leaderboard({ predictions }) {
   const [official, setOfficial] = useState(null);
@@ -54,7 +53,6 @@ export default function Leaderboard({ predictions }) {
 
       <div className="space-y-2">
         {ranked.map(({ prediction: p, score }, i) => {
-          const champ = getTeamById(p.champion);
           return (
             <div
               key={p.id}
@@ -67,17 +65,6 @@ export default function Leaderboard({ predictions }) {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-bold text-white/90 truncate">{p.nickname}</div>
-                {champ && (
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <div
-                      className="w-4 h-4 rounded shrink-0"
-                      style={{ background: `linear-gradient(135deg, ${champ.primary}, ${champ.secondary})` }}
-                    />
-                    <span className="text-[11px] text-white/40 truncate">
-                      {champ.city} {champ.name}
-                    </span>
-                  </div>
-                )}
               </div>
               {hasResults ? (
                 <div className="text-right shrink-0">
@@ -85,10 +72,7 @@ export default function Leaderboard({ predictions }) {
                     {score.total}
                     <span className="text-xs font-medium text-white/40">/{score.maxTotal}</span>
                   </div>
-                  <div className="text-[10px] text-white/40 mt-1 flex items-center gap-1 justify-end">
-                    <BarChart3 className="w-2.5 h-2.5" />
-                    {score.correctCount} correct
-                  </div>
+                  <div className="text-[10px] text-white/40 mt-1">correct picks</div>
                 </div>
               ) : (
                 <div className="text-xs text-white/30 shrink-0">Pending</div>

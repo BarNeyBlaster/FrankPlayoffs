@@ -55,8 +55,7 @@ export default function ConferencePicker({ conference, seeds, onChange }) {
         {/* Seeds panel */}
         <div className="p-5 border-b md:border-b-0 md:border-r border-white/10">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-white/50">Playoff Seeds</h3>
-            <span className="text-[10px] text-white/30">#1 gets first-round bye</span>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-white/50">Playoff Teams</h3>
           </div>
           <div className="space-y-2">
             {SEED_LABELS.map((label, i) => {

@@ -3,13 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Trophy } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ConferencePicker from "@/components/ConferencePicker";
-import PlayoffBracket from "@/components/PlayoffBracket";
 import Leaderboard from "@/components/Leaderboard";
 import TopNav from "@/components/TopNav";
 import { useBracket } from "@/hooks/useBracket";
 
 export default function Home() {
-  const { afcSeeds, nfcSeeds, picks, bothReady, champion, handlePick, handleSeedsChange, reset } = useBracket();
+  const { afcSeeds, nfcSeeds, bothReady, handleSeedsChange, reset } = useBracket();
   const [nickname, setNickname] = useState("");
   const [saving, setSaving] = useState(false);
   const [savedList, setSavedList] = useState([]);
@@ -31,7 +30,7 @@ export default function Home() {
   }, []);
 
   const handleSave = async () => {
-    if (!bothReady || !champion) return;
+    if (!bothReady) return;
     if (!nickname.trim()) return;
     setSaving(true);
     try {
@@ -39,9 +38,6 @@ export default function Home() {
         nickname: nickname.trim(),
         afc_seeds: afcSeeds,
         nfc_seeds: nfcSeeds,
-        picks,
-        champion: champion.id,
-        champion_name: `${champion.city} ${champion.name}`,
       });
       setNickname("");
       await loadSaved();
@@ -73,7 +69,7 @@ export default function Home() {
             Predict the <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">Playoffs</span>
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="text-sm md:text-base text-white/50 max-w-xl mx-auto">
-            Pick 7 teams from each conference, seed them 1–7, then play out your bracket all the way to a Super Bowl champion.
+            Pick 7 teams from each conference and guess who makes the playoffs. Once the real field is locked in, you're scored on how many you got right.
           </motion.p>
         </header>
 
@@ -81,8 +77,8 @@ export default function Home() {
         <section className="mb-10">
           <div className="flex items-center gap-3 mb-5">
             <span className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold">1</span>
-            <h2 className="text-lg font-bold">Seed the Field</h2>
-            <span className="text-xs text-white/40">Select & rank 7 teams per conference</span>
+            <h2 className="text-lg font-bold">Pick the Field</h2>
+            <span className="text-xs text-white/40">Select 7 teams per conference</span>
           </div>
           <div className="grid lg:grid-cols-2 gap-5">
             <ConferencePicker conference="AFC" seeds={afcSeeds} onChange={(s) => handleSeedsChange("AFC", s)} />
@@ -90,7 +86,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Step 2: Bracket */}
+        {/* Step 2: Save */}
         <AnimatePresence>
           {bothReady && (
             <motion.section
@@ -101,33 +97,12 @@ export default function Home() {
             >
               <div className="flex items-center gap-3 mb-5">
                 <span className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold">2</span>
-                <h2 className="text-lg font-bold">Play Your Bracket</h2>
-                <span className="text-xs text-white/40">Click winners round by round</span>
-              </div>
-              <PlayoffBracket afcSeeds={afcSeeds} nfcSeeds={nfcSeeds} picks={picks} onPick={handlePick} />
-            </motion.section>
-          )}
-        </AnimatePresence>
-
-        {/* Step 3: Save */}
-        <AnimatePresence>
-          {champion && (
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="mb-10"
-            >
-              <div className="flex items-center gap-3 mb-5">
-                <span className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold">3</span>
                 <h2 className="text-lg font-bold">Lock It In</h2>
               </div>
               <div className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] p-5 md:p-6 flex flex-col sm:flex-row items-center gap-4">
                 <div className="flex-1 text-center sm:text-left">
-                  <p className="text-xs text-white/50 mb-1">Your predicted Super Bowl champion:</p>
-                  <p className="text-xl font-black" style={{ color: champion.primary === "#000000" ? "#fff" : champion.primary }}>
-                    {champion.city} {champion.name}
-                  </p>
+                  <p className="text-xs text-white/50 mb-1">You've picked 14 teams</p>
+                  <p className="text-xl font-black">Guess who makes the playoffs</p>
                 </div>
                 <input
                   value={nickname}

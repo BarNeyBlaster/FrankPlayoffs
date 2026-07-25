@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useBracket } from "@/hooks/useBracket";
 import { base44 } from "@/api/base44Client";
 import ConferencePicker from "@/components/ConferencePicker";
-import PlayoffBracket from "@/components/PlayoffBracket";
 
 export default function ResultsEditor({ initial, onSaved }) {
   const bracket = useBracket(initial);
@@ -16,13 +15,8 @@ export default function ResultsEditor({ initial, onSaved }) {
     const payload = {
       afc_seeds: bracket.afcSeeds,
       nfc_seeds: bracket.nfcSeeds,
-      picks: bracket.picks,
       season: "2026",
     };
-    if (bracket.champion) {
-      payload.champion = bracket.champion.id;
-      payload.champion_name = `${bracket.champion.city} ${bracket.champion.name}`;
-    }
     try {
       setErrMsg("");
       let record;
@@ -54,12 +48,6 @@ export default function ResultsEditor({ initial, onSaved }) {
         </div>
       </section>
 
-      {bracket.bothReady && (
-        <section className="mb-8">
-          <PlayoffBracket afcSeeds={bracket.afcSeeds} nfcSeeds={bracket.nfcSeeds} picks={bracket.picks} onPick={bracket.handlePick} />
-        </section>
-      )}
-
       <div className="flex flex-col items-center gap-2">
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <button
@@ -67,14 +55,14 @@ export default function ResultsEditor({ initial, onSaved }) {
             disabled={!bracket.bothReady || saving}
             className="px-6 py-3 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold text-sm hover:from-amber-300 hover:to-amber-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
           >
-            {saving ? "Saving…" : bracket.champion ? (initial && initial.id ? "Update Official Results" : "Lock In Results") : "Save Progress"}
+            {saving ? "Saving…" : initial && initial.id ? "Update Official Field" : "Lock In Field"}
           </button>
           {savedMsg && <span className="text-sm text-emerald-400 font-medium">✓ Saved — leaderboard updated</span>}
           {errMsg && <span className="text-sm text-red-400 font-medium text-center max-w-md">{errMsg}</span>}
         </div>
-        {!bracket.champion && bracket.bothReady && (
+        {!bracket.bothReady && (
           <p className="text-xs text-white/40 text-center max-w-md">
-            You can save partial results as games are decided — the leaderboard will score whatever has been locked in so far.
+            Select all 14 playoff teams (7 per conference) to lock in the official field and score every prediction.
           </p>
         )}
       </div>

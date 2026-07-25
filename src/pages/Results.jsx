@@ -50,7 +50,7 @@ export default function Results() {
             <Lock className="w-3.5 h-3.5 text-amber-400" />
             <span className="text-[11px] uppercase tracking-wider text-white/60 font-semibold">Official Results</span>
           </motion.div>
-          <h1 className="text-3xl md:text-5xl font-black tracking-tighter mb-2">Lock In the Real Bracket</h1>
+          <h1 className="text-3xl md:text-5xl font-black tracking-tighter mb-2">Lock In the Real Field</h1>
           <p className="text-sm text-white/50 max-w-xl mx-auto">
             Enter the actual playoff field and results. Once saved, every saved prediction is scored and the leaderboard updates automatically.
           </p>

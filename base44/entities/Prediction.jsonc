@@ -11,33 +11,32 @@
       "items": {
         "type": "string"
       },
-      "description": "7 team ids, index 0 = #1 seed"
+      "description": "7 AFC team ids"
     },
     "nfc_seeds": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "7 team ids, index 0 = #1 seed"
+      "description": "7 NFC team ids"
     },
     "picks": {
       "type": "object",
-      "description": "Game key to winner team id mapping",
+      "description": "Legacy bracket picks (unused)",
       "additionalProperties": true
     },
     "champion": {
       "type": "string",
-      "description": "Team id of predicted Super Bowl champion"
+      "description": "Legacy predicted champion (unused)"
     },
     "champion_name": {
       "type": "string",
-      "description": "Display name of predicted champion"
+      "description": "Legacy champion display name (unused)"
     }
   },
   "required": [
     "nickname",
     "afc_seeds",
-    "nfc_seeds",
-    "champion"
+    "nfc_seeds"
   ]
 }
