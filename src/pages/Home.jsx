@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { getTeamById } from "@/data/nflTeams";
 import ConferencePicker from "@/components/ConferencePicker";
+import TiebreakerPicker from "@/components/TiebreakerPicker";
 import Leaderboard from "@/components/Leaderboard";
 import TopNav from "@/components/TopNav";
 import { useBracket } from "@/hooks/useBracket";
@@ -11,6 +13,9 @@ export default function Home() {
   const { afcSeeds, nfcSeeds, bothReady, handleSeedsChange, reset } = useBracket();
   const [nickname, setNickname] = useState("");
   const [saving, setSaving] = useState(false);
+  const [tbChamp, setTbChamp] = useState(null);
+  const [scoreChamp, setScoreChamp] = useState("");
+  const [scoreOpp, setScoreOpp] = useState("");
   const [savedList, setSavedList] = useState([]);
   const [loadingSaved, setLoadingSaved] = useState(true);
 
@@ -29,15 +34,33 @@ export default function Home() {
     loadSaved();
   }, []);
 
+  // Clear tie-breaker champion if it's no longer in the picked field
+  useEffect(() => {
+    if (tbChamp && ![...afcSeeds, ...nfcSeeds].includes(tbChamp)) setTbChamp(null);
+  }, [afcSeeds, nfcSeeds, tbChamp]);
+
+  const fieldTeams = useMemo(
+    () => [...afcSeeds, ...nfcSeeds].filter(Boolean).map(getTeamById),
+    [afcSeeds, nfcSeeds]
+  );
+
+  const tbReady = bothReady && !!tbChamp && scoreChamp !== "" && scoreOpp !== "";
+
   const handleSave = async () => {
-    if (!bothReady) return;
+    if (!tbReady) return;
     if (!nickname.trim()) return;
+    const sc = parseInt(scoreChamp, 10);
+    const so = parseInt(scoreOpp, 10);
+    if (isNaN(sc) || isNaN(so)) return;
     setSaving(true);
     try {
       await base44.entities.Prediction.create({
         nickname: nickname.trim(),
         afc_seeds: afcSeeds,
         nfc_seeds: nfcSeeds,
+        sb_champion: tbChamp,
+        sb_score_champ: sc,
+        sb_score_opp: so,
       });
       setNickname("");
       await loadSaved();
@@ -46,6 +69,13 @@ export default function Home() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleReset = () => {
+    reset();
+    setTbChamp(null);
+    setScoreChamp("");
+    setScoreOpp("");
   };
 
   return (
@@ -69,7 +99,7 @@ export default function Home() {
             Predict the <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">Playoffs</span>
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="text-sm md:text-base text-white/50 max-w-xl mx-auto">
-            Pick 7 teams from each conference and guess who makes the playoffs. Once the real field is locked in, you're scored on how many you got right.
+            Pick 7 teams from each conference to guess the playoff field, then call the Super Bowl champion and final score as a tie-breaker.
           </motion.p>
         </header>
 
@@ -86,7 +116,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Step 2: Save */}
+        {/* Step 2: Tie-breaker + Save */}
         <AnimatePresence>
           {bothReady && (
             <motion.section
@@ -97,26 +127,37 @@ export default function Home() {
             >
               <div className="flex items-center gap-3 mb-5">
                 <span className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold">2</span>
-                <h2 className="text-lg font-bold">Lock It In</h2>
+                <h2 className="text-lg font-bold">Tie-Breaker &amp; Lock It In</h2>
               </div>
-              <div className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] p-5 md:p-6 flex flex-col sm:flex-row items-center gap-4">
-                <div className="flex-1 text-center sm:text-left">
-                  <p className="text-xs text-white/50 mb-1">You've picked 14 teams</p>
-                  <p className="text-xl font-black">Guess who makes the playoffs</p>
-                </div>
-                <input
-                  value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
-                  placeholder="Your name"
-                  className="w-full sm:w-44 px-4 py-2.5 rounded-lg bg-black/30 border border-white/10 text-sm placeholder:text-white/30 focus:outline-none focus:border-amber-400/50"
+              <div className="space-y-4">
+                <TiebreakerPicker
+                  teams={fieldTeams}
+                  champion={tbChamp}
+                  scoreChamp={scoreChamp}
+                  scoreOpp={scoreOpp}
+                  onChampion={setTbChamp}
+                  onScoreChamp={setScoreChamp}
+                  onScoreOpp={setScoreOpp}
                 />
-                <button
-                  onClick={handleSave}
-                  disabled={saving || !nickname.trim()}
-                  className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold text-sm hover:from-amber-300 hover:to-amber-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                >
-                  {saving ? "Saving..." : "Save Prediction"}
-                </button>
+                <div className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] p-5 md:p-6 flex flex-col sm:flex-row items-center gap-4">
+                  <div className="flex-1 text-center sm:text-left">
+                    <p className="text-xs text-white/50 mb-1">You've picked the field + a tie-breaker</p>
+                    <p className="text-xl font-black">Lock in your prediction</p>
+                  </div>
+                  <input
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    placeholder="Your name"
+                    className="w-full sm:w-44 px-4 py-2.5 rounded-lg bg-black/30 border border-white/10 text-sm placeholder:text-white/30 focus:outline-none focus:border-amber-400/50"
+                  />
+                  <button
+                    onClick={handleSave}
+                    disabled={saving || !tbReady || !nickname.trim()}
+                    className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-gradient-to-r from-amber-400 to-amber-500 text-black font-bold text-sm hover:from-amber-300 hover:to-amber-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  >
+                    {saving ? "Saving..." : "Save Prediction"}
+                  </button>
+                </div>
               </div>
             </motion.section>
           )}
@@ -127,7 +168,7 @@ export default function Home() {
           <div className="flex items-center gap-3 mb-5">
             <Trophy className="w-5 h-5 text-amber-400/70" />
             <h2 className="text-lg font-bold">Leaderboard</h2>
-            <span className="text-xs text-white/40">Ranked by correct picks</span>
+            <span className="text-xs text-white/40">Ranked by correct picks · tie-breaker: champ &amp; score</span>
           </div>
           {loadingSaved ? (
             <div className="text-center py-8 text-white/30 text-sm">Loading…</div>
@@ -138,7 +179,7 @@ export default function Home() {
 
         {(afcSeeds.some(Boolean) || nfcSeeds.some(Boolean)) && (
           <div className="text-center mt-10">
-            <button onClick={reset} className="text-xs text-white/40 hover:text-white/70 underline underline-offset-4">
+            <button onClick={handleReset} className="text-xs text-white/40 hover:text-white/70 underline underline-offset-4">
               Reset everything
             </button>
           </div>

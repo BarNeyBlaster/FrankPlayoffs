@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { getTeamById } from "@/data/nflTeams";
 import moment from "moment";
 
 export default function PredictionsManager() {
@@ -52,12 +53,19 @@ export default function PredictionsManager() {
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] divide-y divide-white/5 overflow-hidden">
       {items.map((p) => {
         const teamCount = [...(p.afc_seeds || []), ...(p.nfc_seeds || [])].filter(Boolean).length;
+        const tbTeam = p.sb_champion ? getTeamById(p.sb_champion) : null;
         return (
           <div key={p.id} className="flex items-center gap-3 px-4 py-3">
             <div className="flex-1 min-w-0">
               <div className="text-sm font-bold text-white/90 truncate">{p.nickname}</div>
               <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="text-[11px] text-white/40 truncate">{teamCount} teams picked</span>
+                <span className="text-[11px] text-white/40 truncate">{teamCount} teams</span>
+                {tbTeam && (
+                  <>
+                    <div className="w-3 h-3 rounded shrink-0" style={{ background: `linear-gradient(135deg, ${tbTeam.primary}, ${tbTeam.secondary})` }} />
+                    <span className="text-[11px] text-white/40 truncate">{tbTeam.abbr}{p.sb_score_champ != null ? ` ${p.sb_score_champ}-${p.sb_score_opp}` : ""}</span>
+                  </>
+                )}
                 <span className="text-[10px] text-white/20 ml-2">{moment(p.created_date).fromNow()}</span>
               </div>
             </div>

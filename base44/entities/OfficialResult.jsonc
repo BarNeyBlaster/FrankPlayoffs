@@ -12,27 +12,30 @@
       "items": {
         "type": "string"
       },
-      "description": "Actual AFC seeds 1-7 (index 0 = #1 seed)"
+      "description": "Actual AFC playoff teams (7)"
     },
     "nfc_seeds": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Actual NFC seeds 1-7 (index 0 = #1 seed)"
+      "description": "Actual NFC playoff teams (7)"
     },
-    "picks": {
-      "type": "object",
-      "description": "Actual game winners keyed afc/nfc (wc1,wc2,wc3,div1,div2,cc) + sb",
-      "additionalProperties": true
-    },
-    "champion": {
+    "sb_champion": {
       "type": "string",
       "description": "Actual Super Bowl champion team id"
     },
-    "champion_name": {
+    "sb_champion_name": {
       "type": "string",
       "description": "Display name of actual champion"
+    },
+    "sb_score_champ": {
+      "type": "integer",
+      "description": "Actual champion's final score"
+    },
+    "sb_score_opp": {
+      "type": "integer",
+      "description": "Actual opponent's final score"
     }
   },
   "required": [

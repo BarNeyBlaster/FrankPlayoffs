@@ -20,23 +20,25 @@
       },
       "description": "7 NFC team ids"
     },
-    "picks": {
-      "type": "object",
-      "description": "Legacy bracket picks (unused)",
-      "additionalProperties": true
-    },
-    "champion": {
+    "sb_champion": {
       "type": "string",
-      "description": "Legacy predicted champion (unused)"
+      "description": "Predicted Super Bowl champion team id"
     },
-    "champion_name": {
-      "type": "string",
-      "description": "Legacy champion display name (unused)"
+    "sb_score_champ": {
+      "type": "integer",
+      "description": "Predicted champion's final score"
+    },
+    "sb_score_opp": {
+      "type": "integer",
+      "description": "Predicted opponent's final score"
     }
   },
   "required": [
     "nickname",
     "afc_seeds",
-    "nfc_seeds"
+    "nfc_seeds",
+    "sb_champion",
+    "sb_score_champ",
+    "sb_score_opp"
   ]
 }

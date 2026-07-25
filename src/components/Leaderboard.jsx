@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Crown, AlertCircle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { scorePrediction } from "@/lib/scoring";
+import { getTeamById } from "@/data/nflTeams";
 
 export default function Leaderboard({ predictions }) {
   const [official, setOfficial] = useState(null);
@@ -35,7 +36,18 @@ export default function Leaderboard({ predictions }) {
 
   const ranked = predictions
     .map((p) => ({ prediction: p, score: scorePrediction(p, official) }))
-    .sort((a, b) => b.score.total - a.score.total);
+    .sort((a, b) => {
+      if (b.score.correctCount !== a.score.correctCount) return b.score.correctCount - a.score.correctCount;
+      const ca = a.score.champCorrect === true ? 1 : 0;
+      const cb = b.score.champCorrect === true ? 1 : 0;
+      if (cb !== ca) return cb - ca;
+      const da = a.score.scoreDiff == null ? Infinity : a.score.scoreDiff;
+      const db = b.score.scoreDiff == null ? Infinity : b.score.scoreDiff;
+      if (da !== db) return da - db;
+      const ea = a.score.exactScore === true ? 1 : 0;
+      const eb = b.score.exactScore === true ? 1 : 0;
+      return eb - ea;
+    });
 
   const hasResults = ranked[0]?.score.hasResults;
 
@@ -53,6 +65,7 @@ export default function Leaderboard({ predictions }) {
 
       <div className="space-y-2">
         {ranked.map(({ prediction: p, score }, i) => {
+          const tbTeam = p.sb_champion ? getTeamById(p.sb_champion) : null;
           return (
             <div
               key={p.id}
@@ -65,6 +78,17 @@ export default function Leaderboard({ predictions }) {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-bold text-white/90 truncate">{p.nickname}</div>
+                {tbTeam && (
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <div
+                      className="w-3.5 h-3.5 rounded shrink-0"
+                      style={{ background: `linear-gradient(135deg, ${tbTeam.primary}, ${tbTeam.secondary})` }}
+                    />
+                    <span className="text-[11px] text-white/40 truncate">
+                      {tbTeam.abbr}{p.sb_score_champ != null ? ` ${p.sb_score_champ}-${p.sb_score_opp}` : ""}
+                    </span>
+                  </div>
+                )}
               </div>
               {hasResults ? (
                 <div className="text-right shrink-0">

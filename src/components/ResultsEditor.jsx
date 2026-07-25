@@ -1,13 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useBracket } from "@/hooks/useBracket";
 import { base44 } from "@/api/base44Client";
+import { getTeamById } from "@/data/nflTeams";
 import ConferencePicker from "@/components/ConferencePicker";
+import TiebreakerPicker from "@/components/TiebreakerPicker";
 
 export default function ResultsEditor({ initial, onSaved }) {
   const bracket = useBracket(initial);
   const [saving, setSaving] = useState(false);
   const [savedMsg, setSavedMsg] = useState(false);
   const [errMsg, setErrMsg] = useState("");
+  const [tbChamp, setTbChamp] = useState(initial?.sb_champion || null);
+  const [scoreChamp, setScoreChamp] = useState(initial?.sb_score_champ != null ? String(initial.sb_score_champ) : "");
+  const [scoreOpp, setScoreOpp] = useState(initial?.sb_score_opp != null ? String(initial.sb_score_opp) : "");
+
+  useEffect(() => {
+    if (tbChamp && ![...bracket.afcSeeds, ...bracket.nfcSeeds].includes(tbChamp)) setTbChamp(null);
+  }, [bracket.afcSeeds, bracket.nfcSeeds, tbChamp]);
+
+  const fieldTeams = [...bracket.afcSeeds, ...bracket.nfcSeeds].filter(Boolean).map(getTeamById);
 
   const handleSave = async () => {
     if (!bracket.bothReady) return;
@@ -17,6 +28,15 @@ export default function ResultsEditor({ initial, onSaved }) {
       nfc_seeds: bracket.nfcSeeds,
       season: "2026",
     };
+    const sc = scoreChamp !== "" ? parseInt(scoreChamp, 10) : NaN;
+    const so = scoreOpp !== "" ? parseInt(scoreOpp, 10) : NaN;
+    if (scoreChamp !== "" && !isNaN(sc)) payload.sb_score_champ = sc;
+    if (scoreOpp !== "" && !isNaN(so)) payload.sb_score_opp = so;
+    if (tbChamp) {
+      payload.sb_champion = tbChamp;
+      const t = getTeamById(tbChamp);
+      if (t) payload.sb_champion_name = `${t.city} ${t.name}`;
+    }
     try {
       setErrMsg("");
       let record;
@@ -47,6 +67,25 @@ export default function ResultsEditor({ initial, onSaved }) {
           <ConferencePicker conference="NFC" seeds={bracket.nfcSeeds} onChange={(s) => bracket.handleSeedsChange("NFC", s)} />
         </div>
       </section>
+
+      {bracket.bothReady && (
+        <section className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[11px] font-bold">★</span>
+            <h2 className="text-base font-bold">Tie-Breaker</h2>
+            <span className="text-xs text-white/40">Lock the Super Bowl champion &amp; final score when decided</span>
+          </div>
+          <TiebreakerPicker
+            teams={fieldTeams}
+            champion={tbChamp}
+            scoreChamp={scoreChamp}
+            scoreOpp={scoreOpp}
+            onChampion={setTbChamp}
+            onScoreChamp={setScoreChamp}
+            onScoreOpp={setScoreOpp}
+          />
+        </section>
+      )}
 
       <div className="flex flex-col items-center gap-2">
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
