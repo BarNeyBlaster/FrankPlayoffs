@@ -26,7 +26,9 @@ export function scorePrediction(prediction, official) {
     const realTotal = Number(official.sb_score_champ) + Number(official.sb_score_opp);
     const predTotal = Number(prediction.sb_score_champ) + Number(prediction.sb_score_opp);
     scoreDiff = Math.abs(predTotal - realTotal);
-    exactScore = prediction.sb_score_champ === official.sb_score_champ && prediction.sb_score_opp === official.sb_score_opp;
+    const realPair = [Number(official.sb_score_champ), Number(official.sb_score_opp)].sort((a, b) => a - b).join("-");
+    const predPair = [Number(prediction.sb_score_champ), Number(prediction.sb_score_opp)].sort((a, b) => a - b).join("-");
+    exactScore = realPair === predPair;
   }
   return { hasResults: true, total: correctCount, maxTotal: 14, correctCount, tbLocked: !!(tbChamp && tbScore), champCorrect, scoreDiff, exactScore };
 }

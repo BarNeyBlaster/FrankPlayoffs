@@ -51,7 +51,7 @@ export default function TiebreakerPicker({ teams, champion, score, onChampion, o
           disabled={!champion}
           className="w-32 px-3 py-2 rounded-lg bg-black/30 border border-white/10 text-sm text-center focus:outline-none focus:border-amber-400/50 disabled:opacity-40"
         />
-        <span className="text-[11px] text-white/40 ml-2">{champion ? "Champion's score first" : "Pick a champion first"}</span>
+        <span className="text-[11px] text-white/40 ml-2">{champion ? "Final score of the game" : "Pick a champion first"}</span>
       </div>
     </div>
   );
