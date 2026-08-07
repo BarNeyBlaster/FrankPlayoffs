@@ -3,6 +3,9 @@ import { Lock, ShieldAlert, LogIn, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 
+// Only this account may access the admin (Official Results) panel.
+const ADMIN_EMAIL = "mcast5283@gmail.com";
+
 export default function AdminRoute({ children }) {
   const { user, isAuthenticated, isLoadingAuth, authChecked, navigateToLogin } = useAuth();
 
@@ -43,8 +46,8 @@ export default function AdminRoute({ children }) {
     );
   }
 
-  // Signed in but not an admin → deny
-  if (user.role !== "admin") {
+  // Signed in but not the allowed admin account → deny
+  if (user.role !== "admin" || (user.email || "").toLowerCase() !== ADMIN_EMAIL) {
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center px-4">
         <div className="max-w-sm w-full rounded-2xl border border-white/10 bg-white/[0.03] p-8 text-center">
@@ -53,7 +56,7 @@ export default function AdminRoute({ children }) {
           </div>
           <h1 className="text-xl font-black text-white mb-2">Not authorized</h1>
           <p className="text-sm text-white/50">
-            Only admins can enter official results. You're signed in as{" "}
+            Only the designated admin account can enter official results. You're signed in as{" "}
             <span className="text-white/80 font-medium">{user.email}</span>.
           </p>
           <Link
