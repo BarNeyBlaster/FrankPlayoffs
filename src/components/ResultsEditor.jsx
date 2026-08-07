@@ -11,8 +11,11 @@ export default function ResultsEditor({ initial, onSaved }) {
   const [savedMsg, setSavedMsg] = useState(false);
   const [errMsg, setErrMsg] = useState("");
   const [tbChamp, setTbChamp] = useState(initial?.sb_champion || null);
-  const [scoreChamp, setScoreChamp] = useState(initial?.sb_score_champ != null ? String(initial.sb_score_champ) : "");
-  const [scoreOpp, setScoreOpp] = useState(initial?.sb_score_opp != null ? String(initial.sb_score_opp) : "");
+  const [score, setScore] = useState(
+    initial?.sb_score_champ != null && initial?.sb_score_opp != null
+      ? `${initial.sb_score_champ}-${initial.sb_score_opp}`
+      : ""
+  );
 
   useEffect(() => {
     if (tbChamp && ![...bracket.afcSeeds, ...bracket.nfcSeeds].includes(tbChamp)) setTbChamp(null);
@@ -28,10 +31,11 @@ export default function ResultsEditor({ initial, onSaved }) {
       nfc_seeds: bracket.nfcSeeds,
       season: "2026",
     };
-    const sc = scoreChamp !== "" ? parseInt(scoreChamp, 10) : NaN;
-    const so = scoreOpp !== "" ? parseInt(scoreOpp, 10) : NaN;
-    if (scoreChamp !== "" && !isNaN(sc)) payload.sb_score_champ = sc;
-    if (scoreOpp !== "" && !isNaN(so)) payload.sb_score_opp = so;
+    const match = score.trim().match(/^(\d{1,3})-(\d{1,3})$/);
+    if (match) {
+      payload.sb_score_champ = parseInt(match[1], 10);
+      payload.sb_score_opp = parseInt(match[2], 10);
+    }
     if (tbChamp) {
       payload.sb_champion = tbChamp;
       const t = getTeamById(tbChamp);
@@ -78,11 +82,9 @@ export default function ResultsEditor({ initial, onSaved }) {
           <TiebreakerPicker
             teams={fieldTeams}
             champion={tbChamp}
-            scoreChamp={scoreChamp}
-            scoreOpp={scoreOpp}
+            score={score}
             onChampion={setTbChamp}
-            onScoreChamp={setScoreChamp}
-            onScoreOpp={setScoreOpp}
+            onScore={setScore}
           />
         </section>
       )}

@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function TiebreakerPicker({ teams, champion, scoreChamp, scoreOpp, onChampion, onScoreChamp, onScoreOpp }) {
+export default function TiebreakerPicker({ teams, champion, score, onChampion, onScore }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
       <div className="flex items-center justify-between mb-1">
@@ -43,27 +43,15 @@ export default function TiebreakerPicker({ teams, champion, scoreChamp, scoreOpp
       <p className="text-[11px] text-white/40 mb-2">Final score</p>
       <div className="flex items-center gap-2">
         <input
-          type="number"
-          min="0"
-          max="99"
-          value={scoreChamp}
-          onChange={(e) => onScoreChamp(e.target.value)}
-          placeholder="Champ"
+          type="text"
+          inputMode="numeric"
+          value={score}
+          onChange={(e) => onScore(e.target.value)}
+          placeholder="e.g. 24-9"
           disabled={!champion}
-          className="w-20 px-3 py-2 rounded-lg bg-black/30 border border-white/10 text-sm text-center focus:outline-none focus:border-amber-400/50 disabled:opacity-40"
+          className="w-32 px-3 py-2 rounded-lg bg-black/30 border border-white/10 text-sm text-center focus:outline-none focus:border-amber-400/50 disabled:opacity-40"
         />
-        <span className="text-white/40 font-bold">:</span>
-        <input
-          type="number"
-          min="0"
-          max="99"
-          value={scoreOpp}
-          onChange={(e) => onScoreOpp(e.target.value)}
-          placeholder="Opp"
-          disabled={!champion}
-          className="w-20 px-3 py-2 rounded-lg bg-black/30 border border-white/10 text-sm text-center focus:outline-none focus:border-amber-400/50 disabled:opacity-40"
-        />
-        <span className="text-[11px] text-white/40 ml-2">{champion ? "Champion : Opponent" : "Pick a champion first"}</span>
+        <span className="text-[11px] text-white/40 ml-2">{champion ? "Champion's score first" : "Pick a champion first"}</span>
       </div>
     </div>
   );

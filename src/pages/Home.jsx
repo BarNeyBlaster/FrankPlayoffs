@@ -14,8 +14,7 @@ export default function Home() {
   const [nickname, setNickname] = useState("");
   const [saving, setSaving] = useState(false);
   const [tbChamp, setTbChamp] = useState(null);
-  const [scoreChamp, setScoreChamp] = useState("");
-  const [scoreOpp, setScoreOpp] = useState("");
+  const [score, setScore] = useState("");
   const [savedList, setSavedList] = useState([]);
   const [loadingSaved, setLoadingSaved] = useState(true);
 
@@ -44,13 +43,13 @@ export default function Home() {
     [afcSeeds, nfcSeeds]
   );
 
-  const tbReady = bothReady && !!tbChamp && scoreChamp !== "" && scoreOpp !== "";
+  const scoreOk = /^\d{1,3}-\d{1,3}$/.test(score.trim());
+  const tbReady = bothReady && !!tbChamp && scoreOk;
 
   const handleSave = async () => {
     if (!tbReady) return;
     if (!nickname.trim()) return;
-    const sc = parseInt(scoreChamp, 10);
-    const so = parseInt(scoreOpp, 10);
+    const [sc, so] = score.trim().split("-").map((n) => parseInt(n, 10));
     if (isNaN(sc) || isNaN(so)) return;
     setSaving(true);
     try {
@@ -74,8 +73,7 @@ export default function Home() {
   const handleReset = () => {
     reset();
     setTbChamp(null);
-    setScoreChamp("");
-    setScoreOpp("");
+    setScore("");
   };
 
   return (
@@ -133,11 +131,9 @@ export default function Home() {
                 <TiebreakerPicker
                   teams={fieldTeams}
                   champion={tbChamp}
-                  scoreChamp={scoreChamp}
-                  scoreOpp={scoreOpp}
+                  score={score}
                   onChampion={setTbChamp}
-                  onScoreChamp={setScoreChamp}
-                  onScoreOpp={setScoreOpp}
+                  onScore={setScore}
                 />
                 <div className="rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] p-5 md:p-6 flex flex-col sm:flex-row items-center gap-4">
                   <div className="flex-1 text-center sm:text-left">
