@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
-import AuthLayout from "@/components/AuthLayout";
-import GoogleIcon from "@/components/GoogleIcon";
-import { getReturnTo } from "@/lib/authReturnTo";
+import { base44 } from "../api/base44Client";
+import AuthLayout from "../components/AuthLayout";
+import GoogleIcon from "../components/GoogleIcon";
+import { getReturnTo } from "../lib/authReturnTo";
 
 export default function Register() {
   const [step, setStep] = useState(1);

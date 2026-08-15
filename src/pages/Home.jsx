@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Trophy, RotateCcw, Save } from "lucide-react";
-import { base44 } from "@/api/base44Client";
-import { useBracket } from "@/hooks/useBracket";
-import { getTeamById } from "@/data/nflTeams";
-import ConferencePicker from "@/components/ConferencePicker";
-import TiebreakerPicker from "@/components/TiebreakerPicker";
-import Leaderboard from "@/components/Leaderboard";
-import TopNav from "@/components/TopNav";
+import { base44 } from "../api/base44Client";
+import { useBracket } from "../hooks/useBracket";
+import { getTeamById } from "../data/nflTeams";
+import ConferencePicker from "../components/ConferencePicker";
+import TiebreakerPicker from "../components/TiebreakerPicker";
+import Leaderboard from "../components/Leaderboard";
+import TopNav from "../components/TopNav";
 
 export default function Home() {
   const bracket = useBracket();

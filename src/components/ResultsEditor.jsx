@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useBracket } from "@/hooks/useBracket";
-import { base44 } from "@/api/base44Client";
-import { getTeamById } from "@/data/nflTeams";
-import ConferencePicker from "@/components/ConferencePicker";
-import TiebreakerPicker from "@/components/TiebreakerPicker";
+import { useBracket } from "../hooks/useBracket";
+import { base44 } from "../api/base44Client";
+import { getTeamById } from "../data/nflTeams";
+import ConferencePicker from "./ConferencePicker";
+import TiebreakerPicker from "./TiebreakerPicker";
 
 export default function ResultsEditor({ initial, onSaved }) {
   const bracket = useBracket(initial);

@@ -1,7 +1,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronUp, ChevronDown, X, Check } from "lucide-react";
-import { DIVISIONS, getTeamsByConference } from "@/data/nflTeams";
+import { DIVISIONS, getTeamsByConference } from "../data/nflTeams";
 
 const SEED_LABELS = ["#1", "#2", "#3", "#4", "#5", "#6", "#7"];
 

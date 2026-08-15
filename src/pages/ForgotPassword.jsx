@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
-import AuthLayout from "@/components/AuthLayout";
+import { base44 } from "../api/base44Client";
+import AuthLayout from "../components/AuthLayout";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");

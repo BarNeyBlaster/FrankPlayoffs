@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Crown } from "lucide-react";
-import { base44 } from "@/api/base44Client";
-import { scorePrediction } from "@/lib/scoring";
+import { base44 } from "../api/base44Client";
+import { scorePrediction } from "../lib/scoring";
 
 export default function Leaderboard() {
   const [official, setOfficial] = useState(null);

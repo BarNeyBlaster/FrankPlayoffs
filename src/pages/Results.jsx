@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Lock, Users } from "lucide-react";
-import { base44 } from "@/api/base44Client";
-import TopNav from "@/components/TopNav";
-import ResultsEditor from "@/components/ResultsEditor";
-import PredictionsManager from "@/components/PredictionsManager";
+import { base44 } from "../api/base44Client";
+import TopNav from "../components/TopNav";
+import ResultsEditor from "../components/ResultsEditor";
+import PredictionsManager from "../components/PredictionsManager";
 
 export default function Results() {
   const [existing, setExisting] = useState(null);

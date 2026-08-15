@@ -1,5 +1,5 @@
 import React from "react";
-import { getTeamById } from "@/data/nflTeams";
+import { getTeamById } from "../data/nflTeams";
 
 const SIZES = {
   sm: "w-5 h-5 text-[8px]",

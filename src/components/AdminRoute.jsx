@@ -1,6 +1,6 @@
 import React from "react";
 import { Lock } from "lucide-react";
-import { useAuth } from "@/lib/AuthContext";
+import { useAuth } from "../lib/AuthContext";
 
 const ADMIN_EMAIL = "mcast5283@gmail.com";
 

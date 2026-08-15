@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
-import { base44 } from "@/api/base44Client";
-import { getTeamById } from "@/data/nflTeams";
+import { base44 } from "../api/base44Client";
+import { getTeamById } from "../data/nflTeams";
 
 export default function PredictionsManager() {
   const [preds, setPreds] = useState([]);
