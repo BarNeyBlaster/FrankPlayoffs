@@ -1,0 +1,45 @@
+{
+  "name": "OfficialResult",
+  "type": "object",
+  "properties": {
+    "season": {
+      "type": "string",
+      "description": "Season label, e.g. 2026",
+      "default": "2026"
+    },
+    "afc_seeds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Actual AFC playoff teams (7)"
+    },
+    "nfc_seeds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Actual NFC playoff teams (7)"
+    },
+    "sb_champion": {
+      "type": "string",
+      "description": "Actual Super Bowl champion team id"
+    },
+    "sb_champion_name": {
+      "type": "string",
+      "description": "Display name of actual champion"
+    },
+    "sb_score_champ": {
+      "type": "integer",
+      "description": "Actual champion's final score"
+    },
+    "sb_score_opp": {
+      "type": "integer",
+      "description": "Actual opponent's final score"
+    }
+  },
+  "required": [
+    "afc_seeds",
+    "nfc_seeds"
+  ]
+}
